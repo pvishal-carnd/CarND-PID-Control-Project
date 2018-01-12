@@ -31,7 +31,7 @@ It was noticed that the inputs from the simulator had a jitter - even without th
 
 Following plot shows the jitter in speed inputs from the simulator that "switches on" after ~850 frames
 
-![Jitter]("jitter.png")
+![Jitter](jitter.png)
 
 ### Possible improvements
 1. **Gain scheduling:** While these PID gains work well at 25 mph, they will not generalize to higher (over even lower) speeds. It is possible to vary these with speed or "schedule" different gains at different speed ranges.
