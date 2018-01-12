@@ -9,13 +9,15 @@ public:
   double p_error;
   double i_error;
   double d_error;
+  double efilt;
 
   /*
   * Coefficients
-  */ 
+  */
   double Kp;
   double Ki;
   double Kd;
+  double cfilt;
 
   /*
   * Constructor

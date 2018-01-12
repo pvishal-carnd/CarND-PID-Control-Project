@@ -1,7 +1,41 @@
-# CarND-Controls-PID
-Self-Driving Car Engineer Nanodegree Program
-
+# PID Control
 ---
+
+## Reflection
+
+The PID gains were tuned manually. Search methods like Twiddle and even a variant of gradient descent was attempted but wasn't extremely useful because it was not possible to start or stop the simulator through a script. Therefore manual method was resorted to. The following process was used to tune the controller.
+
+1. `Kd` and `Ki` were set to zero and only `Kp` was set to a small value. This value was steadily increased till oscillations set in.
+2. `Kd` was slowly increased till the oscillations reduced or died down.
+3. At this point, `Kp` was increased again to a value large enough to provide sufficient correction at sharp turns. `Kd` was tuned simultaneously to adjust the oscillations.
+4. Steady state error was estimated by plotting the `cte`. `Ki` was adjusted till `cte` appeared equally distributed on both sides of `0`. Often, `Ki`introduced oscillations. So `Kd` was tuned simultaneously to keep them under check.
+
+The final values that worked for a speed of 25 mph are as follows:
+```
+double stKp = 0.20;
+double stKi = 0.0001;
+double stKd = 5.5;
+``` 
+
+A PI control for throttle was also implemented and the values are as follows:
+```
+double thKp = 0.25;
+double thKi = 0.002;
+double thKd = 0;
+
+```
+
+### Jitter in the input
+
+It was noticed that the inputs from the simulator had a jitter - even without the PID control in action. We could not find the source of this jitter. This jitter certainly impacted the derivative term because it no longer represents the true physical rate of change of error. A small filter was added to mitigate this jitter. A filter, of course, introduces phase lags and therefore increases oscillations. Therefore it was not possible remove this effect completely.
+
+Following plot shows the jitter in speed inputs from the simulator that "switches on" after ~850 frames
+
+![Jitter]("./jitter.png")
+
+### Possible improvements
+1. **Gain scheduling:** While these PID gains work well at 25 mph, they will not generalize to higher (over even lower) speeds. It is possible to vary these with speed or "schedule" different gains at different speed ranges.
+2. **Filtered derivative:** The derivative term in real systems is often noisy, especially when it is digitally computed by differences. Sensor values therefore, need to be filtered well (perhaps digitally) before derivatives error terms are computed. 
 
 ## Dependencies
 
@@ -37,62 +71,4 @@ There's an experimental patch for windows in this [PR](https://github.com/udacit
 
 Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
 
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-
-## Project Instructions and Rubric
-
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
-
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
-
-## Hints!
-
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
-
-## Call for IDE Profiles Pull Requests
-
-Help your fellow students!
-
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
-
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
-
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
-
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
-
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 

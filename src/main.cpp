@@ -36,12 +36,15 @@ int main(int argc, char* argv[])
     PID throttlePid;
 
     // Steer control
-    double stKp = 0.2;
+    //double stKp = 0.2;
+    //double stKi = 0.0001;
+    //double stKd = 4.0;
+    double stKp = 0.20;
     double stKi = 0.0001;
-    double stKd = 4.0;
+    double stKd = 5.5;
 
     // Throttle control
-    double setSpeed = 30;
+    double setSpeed = 25;
 
     double thKp = 0.25;
     double thKi = 0.002;
@@ -54,7 +57,7 @@ int main(int argc, char* argv[])
         stKd = atof(argv[3]);
     }
 
-    std::cout << "Running PID with gains Kp="<<stKp<<", Ki="<<stKi<<", Kd="<<stKd<<std::endl;
+    //std::cout << "Running PID with gains Kp="<<stKp<<", Ki="<<stKi<<", Kd="<<stKd<<std::endl;
     // std::cout << "Speed = "<<set_speed<<" km/h"<<std::endl;
     steerPid.Init(stKp, stKi, stKd);
     throttlePid.Init(thKp, thKi, thKd);
@@ -76,7 +79,7 @@ int main(int argc, char* argv[])
             //double angle = std::stod(j[1]["steering_angle"].get<std::string>());
             double steer_value;
             /*
-             * TODO: Calcuate steering value here, remember the steering value is
+             * Calcuate steering value here, remember the steering value is
              * [-1, 1].
              * NOTE: Feel free to play around with the throttle and speed. Maybe use
              * another PID controller to control the speed!
@@ -92,14 +95,14 @@ int main(int argc, char* argv[])
             json msgJson;
             msgJson["steering_angle"] = steer_value;
 
-            double speedError = setSpeed - speed;
+            double speedError = speed-setSpeed;
             throttlePid.UpdateError(speedError);
             double throttle = throttlePid.TotalError();
             throttle = std::max(-1.0, std::min(1.0, throttle));
             // DEBUG
-            //std::cout << "Speed Error: " << speedError << " Throttle: " << throttle << std::endl;
+            //std::cout << speed << ", " << throttle << std::endl;
 
-            msgJson["throttle"] = 0.2;//rottle;
+            msgJson["throttle"] = throttle;
             auto msg = "42[\"steer\"," + msgJson.dump() + "]";
             //std::cout << msg << std::endl;
             ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
@@ -128,7 +131,7 @@ int main(int argc, char* argv[])
             });
 
     h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
-            std::cout << "Connected!!!" << std::endl;
+            //std::cout << "Connected!!!" << std::endl;
             });
 
     h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, char *message, size_t length) {
@@ -139,7 +142,7 @@ int main(int argc, char* argv[])
     int port = 4567;
     if (h.listen(port))
     {
-        std::cout << "Listening to port " << port << std::endl;
+        //std::cout << "Listening to port " << port << std::endl;
     }
     else
     {
