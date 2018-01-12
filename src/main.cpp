@@ -38,12 +38,12 @@ int main(int argc, char* argv[])
     // Steer control
     double stKp = 0.2;
     double stKi = 0.0001;
-    double stKd = 5.0;
+    double stKd = 4.0;
 
     // Throttle control
     double setSpeed = 30;
 
-    double thKp = 0.1;
+    double thKp = 0.25;
     double thKi = 0.002;
     double thKd = 0;
 
